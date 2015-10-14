@@ -1,0 +1,10 @@
+#rules li, #about li {
+	text-align: left;
+}
+
+.resource-box{
+	border: 2px solid blue;
+	display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}

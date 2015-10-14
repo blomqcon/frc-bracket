@@ -1,0 +1,27 @@
+{
+  "name": "FRC-Bracket-Challenge",
+  "version": "0.0.1",
+  "description": "A game that lets users predict FRC event winners.",
+  "author": "Connor Blomquist <connor.blomquists@gmail.com>",
+  "contributors": [],
+  "main": "server.js",
+  "scripts": {
+    "prestart": "mongod --dbpath data --smallfiles",
+    "start": "node server.js",
+    "predeploy": "echo deploying...",
+    "postdeploy": "echo deployed!"
+  },
+   "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+	  "body-parser": "^1.13.3",
+    "express": "^4.13.3",
+    "forever": "^0.15.1",
+    "mongodb": "^2.0.42",
+    "monk": "^1.0.1",
+    "q": "^1.4.1",
+    "request": "^2.60.0"
+  }
+}
