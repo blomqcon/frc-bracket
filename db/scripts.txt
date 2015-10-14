@@ -1,0 +1,1 @@
+db.accounts.insert({email: "connor.blomquists@gmail.com", name: "Connor Blomquist", team: "2522", predictions: []});
