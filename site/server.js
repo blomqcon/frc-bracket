@@ -24,27 +24,17 @@ app.engine('.hbs', exphbs({extname: '.hbs'}));
 app.set('view engine', '.hbs');
 
 
-var loginServices = require('./loginServices');
+var loginServices = require('./routes/loginServices');
 app.set('loginServices', loginServices);
-var predictionServices = require('./predictionServices');
+var predictionServices = require('./routes/predictionServices');
 
 
-//routes
-app.get('/', function(req, res) {
-  res.render('layouts/index.hbs');
-});
-app.get('/signin', function(req, res) {
-  res.render('layouts/default.hbs', {whichPartial: 'signin_body'});
-});
-app.get('/createaccount', function(req, res) {
-  res.render('layouts/default.hbs', {whichPartial: 'createaccount_body'});
-});
-app.get('/verifyaccount', function(req, res) {
-  res.render('layouts/default.hbs', {whichPartial: 'verifyaccount_body'});
-});
-app.get('/bracket', function(req, res) {
-  res.render('layouts/default.hbs', {whichPartial: 'bracket_body'});
-});
+var views = require('./routes/views');
+app.get('/', views.index);
+app.get('/signin', views.signin);
+app.get('/createaccount', views.createaccount);
+app.get('/verifyaccount', views.verifyaccount);
+app.get('/bracket', views.bracket);
 
 //api
 app.post('/api/createAccount', loginServices.createAccount);
