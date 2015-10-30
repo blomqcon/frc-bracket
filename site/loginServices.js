@@ -74,10 +74,6 @@ module.exports.requiresAuthentication = function(req, res) {
     var token = JSON.parse(req.cookies.userInfo).accessToken;
     if (_.where(loginTokens, token).length > 0) {
       var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
-      console.log(decodedToken);
-      console.log(Date.parse(decodedToken.expires));
-      console.log(Date.now());
-      console.log(Date.parse(decodedToken.expires) > Date.now());
       if (Date.parse(decodedToken.expires) > Date.now()) {
         return true;
       } else {
@@ -96,12 +92,8 @@ module.exports.requiresAuthentication = function(req, res) {
 }
 
 module.exports.isLoggedIn = function(req, res) {
-  console.log('here3');
   if(module.exports.requiresAuthentication(req, res)) {
-    console.log('here1');
     res.status(200).send();
-  } else {
-    console.log('here2');
   }
 }
 

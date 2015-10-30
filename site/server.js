@@ -3,6 +3,7 @@ var http = require('http');
 var path = require('path');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var exphbs = require('express-handlebars');
 var jwt = require('jwt-simple');
 var _ = require('underscore');
 
@@ -19,12 +20,33 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
+app.engine('.hbs', exphbs({extname: '.hbs'}));
+app.set('view engine', '.hbs');
+
 
 var loginServices = require('./loginServices');
 app.set('loginServices', loginServices);
 var predictionServices = require('./predictionServices');
 
+
 //routes
+app.get('/', function(req, res) {
+  res.render('layouts/index.hbs');
+});
+app.get('/signin', function(req, res) {
+  res.render('layouts/default.hbs', {whichPartial: 'signin_body'});
+});
+app.get('/createaccount', function(req, res) {
+  res.render('layouts/default.hbs', {whichPartial: 'createaccount_body'});
+});
+app.get('/verifyaccount', function(req, res) {
+  res.render('layouts/default.hbs', {whichPartial: 'verifyaccount_body'});
+});
+app.get('/bracket', function(req, res) {
+  res.render('layouts/default.hbs', {whichPartial: 'bracket_body'});
+});
+
+//api
 app.post('/api/createAccount', loginServices.createAccount);
 app.post('/api/loginAccount', loginServices.loginAccount);
 app.post('/api/logoutAccount', loginServices.logoutAccount);
