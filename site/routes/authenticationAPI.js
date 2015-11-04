@@ -1,34 +1,30 @@
+var fs = require('fs');
 var jwt = require('jwt-simple');
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('user:password@localhost:27017/frc-bracket');
-var accounts = db.get("accounts");
-var serviceAccounts = db.get("serviceAccounts");
 var jwt = require('jwt-simple');
 var _ = require('underscore');
 var crypto = require('crypto');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 
-var transporter;
 
-serviceAccounts.findOne({user: "support@royalrobotics.org"}, function (err, doc) {
-  console.log(err);
-  console.log(doc.password);
-  transporter = nodemailer.createTransport(smtpTransport({
+var passwords = fs.readFileSync(__dirname + '/../passwords.txt', 'utf-8').split('\r\n');
+var db = monk(passwords[1] + ':' + passwords[2] + '@localhost:27017/frc-bracket');
+var accounts = db.get("accounts");
+
+var transporter = nodemailer.createTransport(smtpTransport({
     host: 'firstwa.net',
     port: 465,
     secure: true, // use SSL
     auth: {
-        user: 'support@royalrobotics.org',
-        pass: doc.password
+        user: passwords[5],
+        pass: passwords[6]
     },
     tls: {
         rejectUnauthorized: false
     }
   }));
-});
-
 
 var loginTokens = [];
 
