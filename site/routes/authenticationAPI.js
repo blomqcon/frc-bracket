@@ -1,10 +1,33 @@
 var jwt = require('jwt-simple');
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/frc-bracket');
+var db = monk('user:password@localhost:27017/frc-bracket');
 var accounts = db.get("accounts");
+var serviceAccounts = db.get("serviceAccounts");
 var jwt = require('jwt-simple');
 var _ = require('underscore');
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
+var transporter;
+
+serviceAccounts.findOne({user: "support@royalrobotics.org"}, function (err, doc) {
+  console.log(err);
+  console.log(doc.password);
+  transporter = nodemailer.createTransport(smtpTransport({
+    host: 'firstwa.net',
+    port: 465,
+    secure: true, // use SSL
+    auth: {
+        user: 'support@royalrobotics.org',
+        pass: doc.password
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+  }));
+});
 
 
 var loginTokens = [];
@@ -16,7 +39,7 @@ module.exports.createAccount = function(req, res) {
     return false;
   }
   //check if the email exists
-  accounts.find({ email: {$exists: true, $in: [new RegExp('^' + req.body.email + '$', 'i')]}}, function (err, docs) {
+  accounts.find({ email: {$exists: true, $in: [new RegExp('^' + req.body.email + '$', 'i')]}, verified: true}, function (err, docs) {
     if(err) {
       console.log("Database error when checking if account exists");
       res.status(500).send({code: 51, message: '" + err + "'});
@@ -29,8 +52,11 @@ module.exports.createAccount = function(req, res) {
     //insert the account
     var newAccount = req.body;
     delete newAccount['confirmPassword'];
+    newAccount.created = Date.now();
     newAccount.predictions = [];
-    accounts.insert(newAccount); //Fix: passwords are currently stored in the clear
+    newAccount.verified = false;
+    newAccount.verificationCode = sendVerificationEmail(newAccount.email, req.app.get('jwtTokenSecret'));
+    accounts.update({email: newAccount.email}, newAccount, {upsert: true}); //Fix: passwords are currently stored in the clear
     console.log("Account created");
     res.status(200).send({code: 0, message: 'account created'});
     
@@ -42,7 +68,7 @@ module.exports.loginAccount = function(req, res) {
   var userName = req.body.userName;
   var password = req.body.password;
   
-  accounts.findOne({email: userName, password: password}, function (err, docs) {
+  accounts.findOne({email: userName, password: password, verified: true}, function (err, docs) {
     if(err) {
       console.log("Database error when checking if account exists");
       res.status(500).send({code: 51, message: '" + err + "'});
@@ -51,10 +77,12 @@ module.exports.loginAccount = function(req, res) {
       res.status(401).send("Invalid credentials");
     } else {
       console.log('Login: ' + userName);
+      var now = new Date();
       var token = jwt.encode({
         userName: userName,
-        expires: (new Date()).getDate() + 3
+        expires: now.setDate((now).getDate() + 3)
       }, req.app.get('jwtTokenSecret'));
+      console.log(token);
       addToTokens(loginTokens, token, userName, req.app.get('jwtTokenSecret'));
       res.status(200).send({ access_token: token, userName: userName });
     }
@@ -62,11 +90,15 @@ module.exports.loginAccount = function(req, res) {
 }
 
 module.exports.logoutAccount = function(req, res) {
-    var token = req.headers.access_token;
-    var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
-    console.log('Login: ' + decodedToken.userName);
-    removeFromTokens(token);
-    res.send(200);
+    if(req.cookies.userInfo && isJsonString(req.cookies.userInfo)
+          && JSON.parse(req.cookies.userInfo).accessToken) {
+      var token = JSON.parse(req.cookies.userInfo).accessToken;
+      console.log(token);
+      var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
+      console.log('Logout: ' + decodedToken.userName);
+      removeFromTokens(token);
+    }
+    res.status(200).send();
 }
 
 module.exports.requiresAuthentication = function(req, res) {
@@ -74,7 +106,7 @@ module.exports.requiresAuthentication = function(req, res) {
     var token = JSON.parse(req.cookies.userInfo).accessToken;
     if (_.where(loginTokens, token).length > 0) {
       var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
-      if (Date.parse(decodedToken.expires) > Date.now()) {
+      if (decodedToken.expires > Date.now()) {
         return true;
       } else {
         removeFromTokens(token);
@@ -91,10 +123,58 @@ module.exports.requiresAuthentication = function(req, res) {
   }
 }
 
+module.exports.verifyAccount = function(req, res) {
+  var code = req.params.code;
+  accounts.update({verificationCode: code}, {$set: {verified: true}}, function(err, doc) {
+    if(err) {
+      console.log("Database error while verifying account");
+      res.status(500).send({code: 51, message: '" + err + "'});
+    } else if(doc < 1){
+      console.log('invalid verification token');
+    } else {
+      console.log('account verified');
+    }
+  });
+  res.redirect('/signin');
+}
+
+/***** private *****/
 module.exports.isLoggedIn = function(req, res) {
-  if(module.exports.requiresAuthentication(req, res)) {
-    res.status(200).send();
+  if (req.cookies.userInfo && isJsonString(req.cookies.userInfo) &&
+        JSON.parse(req.cookies.userInfo).accessToken) {
+    var token = JSON.parse(req.cookies.userInfo).accessToken;
+    if (_.where(loginTokens, token).length > 0) {
+      var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
+      if (decodedToken.expires > Date.now()) {
+        return true;
+      } else {
+        removeFromTokens(token);
+      }
+    }
   }
+  return false;
+}
+
+function sendVerificationEmail(address, secretToken) {
+  
+  var verificationCode = jwt.encode(address, secretToken);
+  
+  var mailOptions = {
+    from: 'FRC Bracket Verification <support@royalrobotics.org>',
+    to: address,
+    subject: 'FRC Bracket Account Verification', 
+    text: 'Verifiy FRC Bracket Account:\nTo finish setup please click on the following link or paste it in a web browser: http://192.99.169.9:3001/api/verifyaccount/' + verificationCode
+  };
+   
+  transporter.sendMail(mailOptions, function(error, info) {
+      if(error){
+          return console.log(error);
+      }
+      console.log('Message sent: ' + info.response);
+   
+  });
+  
+  return verificationCode;
 }
 
 /*************** Util ***************/
@@ -112,9 +192,7 @@ function addToTokens (loginTokens, newToken, userName, tokenSecret) {
   for(var i = 0; i < loginTokens.length; i++) {
     var token = loginTokens[i];
     var decodedToken = jwt.decode(token, tokenSecret);
-    if(Date.now() > Date.parse(decodedToken.expires)) {
-      loginTokens.splice(i, 1); i--;
-    } else if(decodedToken.userName = userName) {
+    if(decodedToken.userName = userName) {
       loginTokens.splice(i, 1); i--;
       break;//Should only be 1 token for each user
     }
@@ -154,15 +232,15 @@ module.exports.printTokens = function(req, res) {
 module.exports.removeDuplicateExpiredTokens = function(req, res) {
   var loggedInUsers = [];
   
-    _.each(loginTokens, function(token, index) {
-      var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
-      if((Date.now() > Date.parse(decodedToken.expires)) || _.contains(loggedInUsers, decodedToken.userName)) {
-          loginTokens.splice(index, 1);
-          console.log("removed");
-      } else {
-        loggedInUsers.push(decodedToken.userName);
-      }
-    });
+  _.each(loginTokens, function(token, index) {
+    var decodedToken = jwt.decode(token, req.app.get('jwtTokenSecret'));
+    if((Date.now() > decodedToken.expires) || _.contains(loggedInUsers, decodedToken.userName)) {
+        loginTokens.splice(index, 1);
+        console.log("removed");
+    } else {
+      loggedInUsers.push(decodedToken.userName);
+    }
+  });
   console.log(loginTokens);
   res.status(200).send("Duplicate and expired tokens removed");
 }
