@@ -10,6 +10,8 @@ var _ = require('underscore');
 var views = require('./routes/views');
 var authenticationAPI = require('./routes/authenticationAPI');
 var predictionServices = require('./routes/predictionServices');
+var tbhWebhooks = require('./routes/tbaWebhooks');
+var tbhManualAPI = require('./routes/tbaManualAPI');
 
 var app = express();
 var server = http.createServer(app);
@@ -41,13 +43,19 @@ app.post('/api/loginAccount', authenticationAPI.loginAccount);
 app.post('/api/logoutAccount', authenticationAPI.logoutAccount);
 app.get('/api/verifyaccount/:code', authenticationAPI.verifyAccount);
 //app.get('/api/isLoggedIn', authenticationAPI.isLoggedIn);
-
 app.get('/api/getPredictions', predictionServices.getPredictions);
+
+app.post('/api/webhooks/updateTeams', tbhWebhooks.updateTeams);
+
+app.get('/api/tba/manual/updateTeams', tbhManualAPI.updateTeams);
+app.get('/api/tba/manual/updateEvents', tbhManualAPI.updateEvents);
 
 //debug
 app.get('/debug/tokens', authenticationAPI.printTokens);
 app.get('/debug/cleanTokens', authenticationAPI.removeDuplicateExpiredTokens);
 
+
+//var thebluealliance_manager = require('./routes/thebluealliance_data_manager');
 
 
 http.createServer(app).listen(app.get('port'), function(){
