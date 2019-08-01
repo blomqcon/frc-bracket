@@ -1,0 +1,57 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+      "tslint:recommended",
+      "tslint-config-airbnb",
+      "tslint-react",
+      "tslint-microsoft-contrib"
+    ],
+    "rules": {
+      "linebreak-style": false,
+      "jsx-no-multiline-js": false,
+      "ter-arrow-parens": [true, "as-needed", { "requireForBlockBody": false }],
+      "indent": [true, "spaces", 2],
+      "quotemark": [true, "double", "jsx-double"],
+      "max-line-length": [true, {"limit": 200, "ignore-pattern": "^import |^export {(.*?)}"}],
+      "no-non-null-assertion": false,
+      "use-simple-attributes": false, // no thanks
+      "strict-boolean-expressions": false, //what?
+      "variable-name": false,
+      "max-func-body-length": false,
+      "react-this-binding-issue": false, // Enable this
+      "jsx-no-lambda": false, // Enable this
+      "no-default-export": false,
+      "export-name": false,
+      "no-unused-variable": false, // Slow
+      "no-reserved-keywords": false,
+      "no-unnecessary-local-variable": false,
+      "ordered-imports": false,
+      "no-any": false, // Annoying
+      "member-ordering": false, // Annoying
+      "typedef": false, // Annoying
+      "no-suspicious-comment": false,
+      "newline-before-return": false,
+      "no-console": false, // Allow console for now
+      "no-unsafe-any": false, // How else do you do bind?
+      "completed-docs": false, // Optimize for self documenting class name.
+      "deprecation": true, // Don't use deprecated APIs.
+      "function-name": [
+        true,
+        {
+          "static-method-regex": "^[a-z][\\w\\d]+$" // Don't use UPPERCASE for static methods.
+        }
+      ],
+      "interface-name": [
+        true,
+        "never-prefix" // No 'I' prefix for interfaces. Follow Microsoft's internal guideline.
+      ],
+      "prefer-type-cast": false, // Enforce 'as' type casts instead to be consistent across ts and tsx.
+      "no-angle-bracket-type-assertion": true, // Enforce 'as' type casts to be consistent across ts and tsx.
+      "no-internal-module": true, // No module/namespace keywords.
+      "no-mergeable-namespace": true, // No module/namespace keywords.
+      "no-namespace": true, // No module/namespace keywords.
+      "no-relative-imports": false, // Allow relative imports.
+      "no-submodule-imports": [true, "@ms/ink"]
+    }
+  }
+  

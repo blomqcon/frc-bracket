@@ -1,0 +1,30 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+      "strict": true,
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "forceConsistentCasingInFileNames": true,
+      "noFallthroughCasesInSwitch": true,
+      "noImplicitReturns": false,
+      "noImplicitAny": false,
+      "noImplicitThis": true,
+      "noEmitOnError": true,
+      "removeComments": false,
+      "allowJs": false,
+      "jsx": "react",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "target": "es6",
+      "baseUrl": ".",
+      "lib": [
+        "dom",
+        "es6",
+        "es5"
+      ],
+    },
+    "files": [
+      "custom.d.ts",
+      "node_modules/@suiteux/suiteux-shell-react/typings/suiteux-shell-react.d.ts"
+    ]
+  }
