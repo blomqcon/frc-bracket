@@ -22,9 +22,5 @@
         "es6",
         "es5"
       ],
-    },
-    "files": [
-      "custom.d.ts",
-      "node_modules/@suiteux/suiteux-shell-react/typings/suiteux-shell-react.d.ts"
-    ]
+    }
   }
