@@ -3,6 +3,8 @@ module.exports =  {
     extends:  [
       'plugin:react/recommended',
       'plugin:@typescript-eslint/recommended',
+      "airbnb",
+      "airbnb/hooks"
     ],
     parserOptions:  {
       ecmaVersion:  2018,
