@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { AxiosInstance } from 'axios';
+import { AxiosInstance } from axios from 'axios';
+
 
 export interface Event {
-  name?: string
-  key?: string
+  name?: string;
+  key?: string;
 }
 
 export class EventClient {
@@ -15,8 +15,8 @@ export class EventClient {
         timeout: 10_000,
         headers: {
           'User-Agent': 'frc-bracket-challenge',
-          'X-TBA-Auth-Key': process.env.TBA_Auth_Key
-        }
+          'X-TBA-Auth-Key': process.env.TBA_Auth_Key,
+      },
     });
   }
 

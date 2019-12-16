@@ -1,6 +1,6 @@
-import { Event } from "../../../ApiClient/EventClient";
+import { Event } from '../../../ApiClient/EventClient';
 
-import { EventSelectorAction, FETCH_EVENT_LIST_START, FETCH_EVENT_LIST_SUCCESS } from "./actions";
+import { EventSelectorAction, FETCH_EVENT_LIST_START, FETCH_EVENT_LIST_SUCCESS } from './actions';
 
 export interface EventSelectorState {
   events: Event[];
@@ -9,7 +9,7 @@ export interface EventSelectorState {
 
 const initialState: EventSelectorState = {
   events: [],
-  updateEventsInProgress: false
+  updateEventsInProgress: false,
 };
 
 export const eventSelectorReducer = (state = initialState, action: EventSelectorAction): EventSelectorState => {
@@ -17,15 +17,15 @@ export const eventSelectorReducer = (state = initialState, action: EventSelector
     case FETCH_EVENT_LIST_START:
       return {
         ...state,
-        updateEventsInProgress: true
+        updateEventsInProgress: true,
       };
     case FETCH_EVENT_LIST_SUCCESS:
       return {
         ...state,
         updateEventsInProgress: false,
-        events: action.payload
+        events: action.payload,
       };
     default:
       return state;
   }
-}
+};

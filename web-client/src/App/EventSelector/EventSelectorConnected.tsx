@@ -1,10 +1,10 @@
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import { AppState } from "../store";
-import { EventSelector } from "./EventSelector";
-import { updateEventList } from "./redux-state/commands";
-import { Event } from "../../ApiClient/EventClient";
+import { AppState } from '../store';
+import { EventSelector } from './EventSelector';
+import { updateEventList } from './redux-state/commands';
+import { Event } from '../../ApiClient/EventClient';
 
 interface EventSelectorConnectedProps {
   // Nothing is currently passed in.
@@ -20,21 +20,17 @@ interface StateProps {
   updateEventsInProgress: boolean;
 }
 
-const mapStateToProps = (state: AppState, ownProps: EventSelectorConnectedProps): StateProps => {
-  return {
-    events: state.eventSelector.events,
-    updateEventsInProgress: state.eventSelector.updateEventsInProgress,
-  };
-};
+const mapStateToProps = (state: AppState, ownProps: EventSelectorConnectedProps): StateProps => ({
+  events: state.eventSelector.events,
+  updateEventsInProgress: state.eventSelector.updateEventsInProgress,
+});
 
-const mapDispatchToProps = (dispatch: any): DispatchProps => {
-  return bindActionCreators(
-    {
-      updateEventList,
-    },
-    dispatch,
-  );
-};
+const mapDispatchToProps = (dispatch: any): DispatchProps => bindActionCreators(
+  {
+    updateEventList,
+  },
+  dispatch,
+);
 
 export default connect<StateProps, DispatchProps, EventSelectorConnectedProps, AppState>(
   mapStateToProps,
