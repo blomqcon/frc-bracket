@@ -1,13 +1,13 @@
 import * as React from "react";
 import "./App.css";
 import { Header } from "./Header/Header";
-import { EventSelector } from "./EventSelector/EventSelector";
+import EventSelectorConnected from "./EventSelector/EventSelectorConnected";
 
 export const App = () => {
   return (
     <div>
       <Header />
-      <EventSelector />
+      <EventSelectorConnected />
     </div>
   );
 };

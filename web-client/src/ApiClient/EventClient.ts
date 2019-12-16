@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AxiosInstance } from 'axios';
 
-export interface IEvent {
+export interface Event {
   name?: string
   key?: string
 }
@@ -20,8 +20,8 @@ export class EventClient {
     });
   }
 
-  public async getEvents(): Promise<IEvent[]> {
-    const response = await this.client.get<IEvent[]>('/events/2019/simple');
+  public async getEvents(): Promise<Event[]> {
+    const response = await this.client.get<Event[]>('/events/2019/simple');
     return response.data;
   }
 }

@@ -1,20 +1,20 @@
 import * as React from "react";
 import { useEffect } from "react";
-import { EventClient } from "../../ApiClient/EventClient";
 
-export const EventSelector = () => {
+export interface EventSelectorProps {
+  events: Event[];
+  updateEventsInProgress: boolean;
+  updateEventList(): void;
+}
 
-  const eventClient = new EventClient();
+export const EventSelector = (props: EventSelectorProps) => {
 
   useEffect(() => {
-    // KLUDGE: Async wrapper until I add have redux
-    (async () => {
-      const events = await eventClient.getEvents();
-      console.log(events.length);
-    })();
-  });
+    // When this component is mounted we update the event list.
+    props.updateEventList();
+  }, []);
 
   return (
-    <h2>Pick an event to make a prediction!</h2>
+    <h2>Pick an event (of {props.events.length}) to make a prediction!</h2>
   );
 };
