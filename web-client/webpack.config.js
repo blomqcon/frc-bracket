@@ -35,21 +35,15 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.ts(x)$/, // Can we run tslint on tsx files?
-          enforce: "pre",
-          use: [
-            {
-              loader: "tslint-loader",
-              options: {
-                fix: true
-              }
-            }
-          ]
+          test: /\.ts(x)?$/,
+          exclude: /node_modules/,
+          enforce: 'pre',
+          use: ["eslint-loader"]
         },
         {
           test: /\.ts(x)?$/,
-          use: ["ts-loader"],
-          exclude: /node_modules/
+          exclude: /node_modules/,
+          use: ["ts-loader"]
         },
         {
           test: /\.css$/,
