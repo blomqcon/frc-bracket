@@ -1,8 +1,8 @@
 const path = require("path");
-const fs = require("fs");
+const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const Dotenv = require('dotenv-webpack');
 
 module.exports = (env, argv) => {
   return {
@@ -18,7 +18,6 @@ module.exports = (env, argv) => {
       filename: "bundle.js"
     },
     plugins: [
-      // new CleanWebpackPlugin(["wwwroot/*"]),
       new HtmlWebpackPlugin({
         inject: false,
         template: "./index.html",
@@ -26,12 +25,17 @@ module.exports = (env, argv) => {
       }),
       new MiniCssExtractPlugin({
         filename: "css/[name].css"
+      }),
+      new Dotenv({
+        path: './local.env',
+        safe: './defaults.env',
+        defaults: './defaults.env'
       })
     ],
     module: {
       rules: [
         {
-          test: /\.ts$/, // Can we run tslint on tsx files?
+          test: /\.ts(x)$/, // Can we run tslint on tsx files?
           enforce: "pre",
           use: [
             {
@@ -90,7 +94,7 @@ module.exports = (env, argv) => {
       hot: true,
       overlay: true,
       progress: true,
-      port: 80,
+      port: 8080,
       // host: "dev.whiteboard.microsoft.com",
       // https: {
       //   key: fs.readFileSync('../../DevCert/devCert.pem'),
@@ -100,6 +104,11 @@ module.exports = (env, argv) => {
       index: 'index.html',
       historyApiFallback: true,
       // writeToDisk: true
+      // headers: {
+      //   "Access-Control-Allow-Origin": "*",
+      //   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+      //   "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization"
+      // }
     }
   }
 };

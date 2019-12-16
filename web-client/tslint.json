@@ -1,10 +1,7 @@
 {
     "defaultSeverity": "error",
     "extends": [
-      "tslint:recommended",
-      "tslint-config-airbnb",
-      "tslint-react",
-      "tslint-microsoft-contrib"
+      "tslint:recommended"
     ],
     "rules": {
       "linebreak-style": false,

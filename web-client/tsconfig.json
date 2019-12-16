@@ -16,7 +16,7 @@
       "moduleResolution": "node",
       "sourceMap": true,
       "target": "es6",
-      "baseUrl": ".",
+      "baseUrl": "src",
       "lib": [
         "dom",
         "es6",

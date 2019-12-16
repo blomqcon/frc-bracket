@@ -7,5 +7,5 @@ render(
   (
       <App />
   ),
-  document.getElementById("app-root")
+  document.getElementById("app-root"),
 );
