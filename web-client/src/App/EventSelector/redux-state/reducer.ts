@@ -29,3 +29,5 @@ export const eventSelectorReducer = (state = initialState, action: EventSelector
       return state;
   }
 };
+
+export default eventSelectorReducer;

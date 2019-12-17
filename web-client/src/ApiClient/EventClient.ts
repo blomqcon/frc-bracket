@@ -1,21 +1,20 @@
-import { AxiosInstance } from axios from 'axios';
-
+import axios, { AxiosInstance } from 'axios';
 
 export interface Event {
   name?: string;
   key?: string;
 }
 
-export class EventClient {
+export default class EventClient {
   private readonly client: AxiosInstance;
 
   public constructor() {
     this.client = axios.create({
-        baseURL: 'https://www.thebluealliance.com/api/v3',
-        timeout: 10_000,
-        headers: {
-          'User-Agent': 'frc-bracket-challenge',
-          'X-TBA-Auth-Key': process.env.TBA_Auth_Key,
+      baseURL: 'https://www.thebluealliance.com/api/v3',
+      timeout: 10_000,
+      headers: {
+        'User-Agent': 'frc-bracket-challenge',
+        'X-TBA-Auth-Key': process.env.TBA_Auth_Key,
       },
     });
   }
